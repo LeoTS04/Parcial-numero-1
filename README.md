@@ -39,12 +39,8 @@ El propósito de este proyecto es diseñar e implementar una arquitectura de red
 ### 3.1. VLAN por defecto e interfaces sin uso
 En el Switch de Capa 2 (Cisco IOSvL2) se modificó la VLAN nativa del enlace troncal hacia la VLAN 999 para mitigar ataques de VLAN Hopping, evitando el uso de la VLAN 1 predeterminada. Asimismo, se deshabilitaron administrativamente todas las interfaces que no tienen un rol asignado en la infraestructura para prevenir conexiones no autorizadas.
 
-* **Evidencia del Trunk y VLAN Nativa 999:**
+* **Evidencia del Trunk y VLAN Nativa 999 y interfaces apagadas:**
   ![show interfaces trunk] <img width="630" height="514" alt="image" src="https://github.com/user-attachments/assets/97bfad04-3250-4a7b-aad0-d25f93208816" />
-
-
-* **Evidencia de Interfaces Apagadas:**
-  ![show ip interface brief](img/req1_interfaces_down.png)
 
 ---
 
@@ -52,11 +48,14 @@ En el Switch de Capa 2 (Cisco IOSvL2) se modificó la VLAN nativa del enlace tro
 Se implementó una ruta por defecto en el FortiGate apuntando al ISP (`203.0.113.1`). Se habilitó el servicio DHCP en la subinterfaz de la VLAN 10 para la entrega dinámica de parámetros IP a los clientes. Mediante una política de firewall se habilitó la traducción de direcciones de red (Source NAT con IP de la interfaz saliente), permitiendo que los usuarios de la red interna alcancen destinos externos en Internet con respuesta bidireccional.
 
 * **Conectividad ICMP y Traceroute desde PC de Usuarios:**
-  ![Ping a 8.8.8.8](img/req2_ping_pc.png)
-  ![Traceroute a 8.8.8.8](img/req2_traceroute_pc.png)
+  ![Ping a 8.8.8.8] <img width="502" height="162" alt="image" src="https://github.com/user-attachments/assets/18b173c7-d497-44dc-aa9f-25a154f78988" />
+
+  ![Traceroute a 8.8.8.8] <img width="587" height="113" alt="image" src="https://github.com/user-attachments/assets/08ca4212-6078-434e-a2ec-eb8e75eace23" />
+
 
 * **Política y Registro de Tráfico con NAT en FortiGate:**
-  ![Log de Forward Traffic con NAT](img/req2_fortigate_nat.png)
+  ![Log de Forward Traffic con NAT] <img width="987" height="31" alt="image" src="https://github.com/user-attachments/assets/10c1fd71-2445-40ef-bd62-a06c9e9d9554" />
+
 
 ---
 
@@ -64,13 +63,11 @@ Se implementó una ruta por defecto en el FortiGate apuntando al ISP (`203.0.113
 Se establecieron políticas jerárquicas en el FortiGate que restringen la administración de los servidores por el protocolo SSH (TCP/22). Únicamente los dispositivos originados en la VLAN 20 (Administrativos) disponen de una política de aceptación (`ACCEPT`). Todo tráfico SSH proveniente de la VLAN 10 o cualquier otra red es interceptado por una regla de denegación explícita (`DENY`) con registro detallado de eventos.
 
 * **Acceso SSH exitoso desde PC VLAN 20:**
-  ![SSH exitoso VLAN 20](img/req3_ssh_vlan20_exito.png)
+  ![SSH exitoso VLAN 20] <img width="665" height="391" alt="image" src="https://github.com/user-attachments/assets/cadd6aa6-431f-4d8c-bb62-a208f5215bae" />
+
 
 * **Acceso SSH denegado desde PC VLAN 10:**
-  ![SSH denegado VLAN 10](img/req3_ssh_vlan10_bloqueo.png)
-
-* **Registro de logs en FortiGate:**
-  ![Logs de Firewall para SSH](img/req3_fortigate_log_ssh.png)
+  ![SSH denegado VLAN 10] <img width="985" height="28" alt="image" src="https://github.com/user-attachments/assets/1671f717-f6f2-4faa-a2e6-dbfb35daabec" />
 
 ---
 
@@ -110,23 +107,17 @@ Se validó que el tráfico entre el PC de la sucursal (`192.168.85.10`) y el Web
 * **Estado de negociación en Cisco (ISAKMP y IPsec SA):**
   ![show crypto isakmp sa] <img width="492" height="63" alt="image" src="https://github.com/user-attachments/assets/03abe56b-19a0-4acf-beca-01eb1f11c4d7" />
 
-  ![show crypto ipsec sa](img/req7_cisco_ipsec_sa.png)
+  ![show crypto ipsec sa] <img width="549" height="370" alt="image" src="https://github.com/user-attachments/assets/cb225e71-542d-4aa1-81d2-f39b51870c81" />
+
 
 * **Estado del túnel en la interfaz web de FortiGate:**
-  ![Túnel IPsec en Verde](img/req7_fortigate_vpn_up.png)
+  ![Túnel IPsec en Verde] <img width="990" height="39" alt="image" src="https://github.com/user-attachments/assets/4ef57fcd-622c-41c3-a048-4559c24bf963" />
+
 
 * **Traza de paquetes (Traceroute) hacia el Servidor Web:**
-  ![Traceroute a través de VPN](img/req7_traceroute_vpn.png)
+  ![Traceroute a través de VPN] <img width="569" height="94" alt="image" src="https://github.com/user-attachments/assets/9c87ecaf-3847-4734-b03b-22d1ffd963b8" />
+
 
 * **Pérdida de conectividad al deshabilitar el túnel:**
-  ![Pérdida de paquetes con túnel caído](img/req7_vpn_down_drop.png)
+  ![Pérdida de paquetes con túnel caído] <img width="588" height="144" alt="image" src="https://github.com/user-attachments/assets/a3e98420-c9df-4334-a253-e81799eccc32" />
 
----
-
-## 4. Archivos de Configuración
-
-Los archivos de respaldo con la configuración completa de cada nodo de red se encuentran en el directorio `/configs`:
-* `configs/FortiGate.conf`: Configuración exportada desde la interfaz web del FortiGate.
-* `configs/Switch_L2.cfg`: Running-config del switch Cisco IOSvL2.
-* `configs/Cisco_Sucursal_R2.cfg`: Running-config del router Cisco de sucursal.
-* `configs/ISP_R1.cfg`: Running-config del router de tránsito ISP.
